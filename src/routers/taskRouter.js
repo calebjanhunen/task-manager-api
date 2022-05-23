@@ -1,9 +1,10 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const router = express.Router();
 const auth = require("../middleware/auth");
 const Task = require("../models/task");
 
-router.post("/tasks", auth, async (req, res) => {
+router.post("/tasks", bodyParser.json(), auth, async (req, res) => {
     // const task = new Task(req.body);
     const task = new Task({
         ...req.body,
@@ -20,7 +21,7 @@ router.post("/tasks", auth, async (req, res) => {
 //GET /tasks?completed=false
 // Get /tasks?limit=10?skip=10 -> skip first 10 results, limit number of results shown to 10
 //Get /tasks?sortBy=createdAt_asc (or desc)
-router.get("/tasks", auth, async (req, res) => {
+router.get("/tasks", bodyParser.json(), auth, async (req, res) => {
     const match = {
         owner: req.user._id,
     };
@@ -58,7 +59,7 @@ router.get("/tasks/:id", auth, async (req, res) => {
     }
 });
 
-router.patch("/tasks/:id", auth, async (req, res) => {
+router.patch("/tasks/:id", bodyParser.json(), auth, async (req, res) => {
     const updates = Object.keys(req.body);
     const allowedUpdates = ["description", "completed"];
     const isValidOperation = updates.every((update) =>
@@ -85,7 +86,7 @@ router.patch("/tasks/:id", auth, async (req, res) => {
     }
 });
 
-router.delete("/tasks/:id", auth, async (req, res) => {
+router.delete("/tasks/:id", bodyParser.json(), auth, async (req, res) => {
     try {
         const task = await Task.findOneAndDelete({
             _id: req.params.id,
